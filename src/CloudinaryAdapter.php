@@ -72,6 +72,9 @@ class CloudinaryAdapter implements AdapterInterface
             'public_id' => $path
         ], $cloudinaryOptions);
 
+        // Strip extension from public_id
+        $options['public_id'] = preg_replace('/\\.[^.\\s]{3,4}$/', '', $options['public_id']);
+
         $resourceMetadata = stream_get_meta_data($resource);
         $uploadedMetadata = Uploader::upload($resourceMetadata['uri'], $options);
 
