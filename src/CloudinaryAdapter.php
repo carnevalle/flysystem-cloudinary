@@ -64,9 +64,18 @@ class CloudinaryAdapter implements AdapterInterface
      */
     public function writeStream($path, $resource, Config $options)
     {
+
+        $cloudinaryOptions = $options->get('cloudinary') ?? [];
+
+        // Create the options object
+        $options = array_merge([
+            'public_id' => $path
+        ], $cloudinaryOptions);
+
         $resourceMetadata = stream_get_meta_data($resource);
-              $uploaded_metadata = Uploader::upload($resourceMetadata['uri'], ['public_id' => $path]);
-        return $uploaded_metadata;
+        $uploadedMetadata = Uploader::upload($resourceMetadata['uri'], $options);
+
+        return $uploadedMetadata;
     }
     /**
      * Update a file.
