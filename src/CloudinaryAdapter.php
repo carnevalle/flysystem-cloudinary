@@ -382,8 +382,8 @@ class CloudinaryAdapter implements AdapterInterface
 
     /**
      * Remove extension from path
-     * Laravel returns the filename with extensions [public_id].[extension]
-     * Cloudinary uses only the public_id
+     * Laravel returns the filename with extensions [public_id].[extension] when storing a file
+     * Cloudinary uses only the public_id without extension
      *
      * @param string $path
      *
