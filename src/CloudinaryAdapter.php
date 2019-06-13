@@ -9,6 +9,7 @@ use Cloudinary\Uploader;
 use League\Flysystem\Config;
 use League\Flysystem\AdapterInterface;
 use League\Flysystem\Adapter\Polyfill\NotSupportingVisibilityTrait;
+use Illuminate\Support\Facades\Log;
 /**
  *
  */
@@ -204,7 +205,7 @@ class CloudinaryAdapter implements AdapterInterface
     public function has($path)
     {
         try {
-            $this->api->resource($path);
+            $this->getResource($path); //$this->api->resource($path);
         } catch (Exception $e) {
             return false;
         }
@@ -277,6 +278,12 @@ class CloudinaryAdapter implements AdapterInterface
      */
     public function getResource($path)
     {
+        if(!empty(pathinfo($path, PATHINFO_EXTENSION))){
+            Log::warning("Cloudinary: public_id contains extensions");
+            Log::warning("Removing extension from public_id");
+            $path = preg_replace('/\\.[^.\\s]{3,4}$/', '', $path);
+        }
+
         return (array) $this->api->resource($path);
     }
     /**
