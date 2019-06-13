@@ -65,7 +65,6 @@ class CloudinaryAdapter implements AdapterInterface
      */
     public function writeStream($path, $resource, Config $options)
     {
-
         $cloudinaryOptions = $options->get('cloudinary') ?? [];
 
         // Create the options object
@@ -74,7 +73,7 @@ class CloudinaryAdapter implements AdapterInterface
         ], $cloudinaryOptions);
 
         // Strip extension from public_id
-        $options['public_id'] = preg_replace('/\\.[^.\\s]{3,4}$/', '', $options['public_id']);
+        $options['public_id'] = $this->preparePath($options['public_id']);
 
         $resourceMetadata = stream_get_meta_data($resource);
         $uploadedMetadata = Uploader::upload($resourceMetadata['uri'], $options);
@@ -381,6 +380,15 @@ class CloudinaryAdapter implements AdapterInterface
         return compact('size');
     }
 
+    /**
+     * Remove extension from path
+     * Laravel returns the filename with extensions [public_id].[extension]
+     * Cloudinary uses only the public_id
+     *
+     * @param string $path
+     *
+     * @return string
+     */
     protected function preparePath($path){
         if(!empty(pathinfo($path, PATHINFO_EXTENSION))){
             Log::warning("public_id contains extensions");
