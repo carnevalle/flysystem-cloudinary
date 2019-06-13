@@ -159,6 +159,7 @@ class CloudinaryAdapter implements AdapterInterface
      */
     public function delete($path)
     {
+        $path = $this->preparePath($path);
         $result = Uploader::destroy($path, ['invalidate' => true]);
         return is_array($result) ? $result['result'] == 'ok' : false;
     }
@@ -278,11 +279,7 @@ class CloudinaryAdapter implements AdapterInterface
      */
     public function getResource($path)
     {
-        if(!empty(pathinfo($path, PATHINFO_EXTENSION))){
-            Log::warning("Cloudinary: public_id contains extensions");
-            Log::warning("Removing extension from public_id");
-            $path = preg_replace('/\\.[^.\\s]{3,4}$/', '', $path);
-        }
+        $path = $this->preparePath($path);
 
         return (array) $this->api->resource($path);
     }
@@ -382,5 +379,16 @@ class CloudinaryAdapter implements AdapterInterface
     {
         $size = $resource['bytes'];
         return compact('size');
+    }
+
+    protected function preparePath($path){
+        if(!empty(pathinfo($path, PATHINFO_EXTENSION))){
+            Log::warning("public_id contains extensions");
+            Log::warning("before: ".$path);
+            $path = preg_replace('/\\.[^.\\s]{3,4}$/', '', $path);
+            Log::warning("after: ".$path);
+        }
+
+        return $path;
     }
 }
